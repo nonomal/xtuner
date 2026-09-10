@@ -1,3 +1,8 @@
+zdev/
+old/
+bak/
+exp*/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -113,6 +118,7 @@ data
 *.pkl.json
 *.log.json
 work_dirs/
+work_dir/
 
 # Pytorch
 *.pth
@@ -122,3 +128,8 @@ work_dirs/
 # srun
 *.out
 batchscript-*
+
+docs/en/_build/
+docs/en/api/generated/
+docs/zh_cn/_build/
+docs/zh_cn/api/generated/

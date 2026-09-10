@@ -23,272 +23,127 @@
 
 </div>
 
+
+
+
 ## 🚀 Speed Benchmark
 
-- XTuner 与 LLaMA-Factory 在 Llama2-7B 模型上的训练效率对比
-
 <div align=center>
-  <img src="https://github.com/InternLM/xtuner/assets/41630003/9c9dfdf4-1efb-4daf-84bf-7c379ae40b8b" style="width:80%">
+  <img src="https://github.com/user-attachments/assets/fa42d587-068d-427b-b88c-25a164b3511c" style="width:80%">
 </div>
 
-- XTuner 与 LLaMA-Factory 在 Llama2-70B 模型上的训练效率对比
-
-<div align=center>
-  <img src="https://github.com/InternLM/xtuner/assets/41630003/5ba973b8-8885-4b72-b51b-c69fa1583bdd" style="width:80%">
-</div>
 
 ## 🎉 更新
 
-- **\[2024/07\]** 支持 [MiniCPM](xtuner/configs/minicpm/) 模型!
-- **\[2024/07\]** 支持训练 [DPO](https://github.com/InternLM/xtuner/tree/main/xtuner/configs/dpo)， [ORPO](https://github.com/InternLM/xtuner/tree/main/xtuner/configs/orpo) 还有 [Reward Model](https://github.com/InternLM/xtuner/tree/main/xtuner/configs/reward_model) ! 并且能够支持打包数据以及序列并行功能！ 请参考 [文档](https://xtuner.readthedocs.io/zh-cn/latest/dpo/overview.html) 了解更多信息。
-- **\[2024/07\]** 支持 [InternLM 2.5](xtuner/configs/internlm/internlm2_5_chat_7b/) 模型!
-- **\[2024/06\]** 支持 [DeepSeek V2](xtuner/configs/deepseek/deepseek_v2_chat/) models! **训练速度提升一倍！**
-- **\[2024/04\]** 多模态大模型 [LLaVA-Phi-3-mini](https://huggingface.co/xtuner/llava-phi-3-mini-hf) 发布！快速开始请查阅此[文档](xtuner/configs/llava/phi3_mini_4k_instruct_clip_vit_large_p14_336)！
-- **\[2024/04\]** 多模态大模型 [LLaVA-Llama-3-8B](https://huggingface.co/xtuner/llava-llama-3-8b) 和 [LLaVA-Llama-3-8B-v1.1](https://huggingface.co/xtuner/llava-llama-3-8b-v1_1) 发布！快速开始请查阅此[文档](xtuner/configs/llava/llama3_8b_instruct_clip_vit_large_p14_336)！
-- **\[2024/04\]** 支持 [Llama 3](xtuner/configs/llama) 模型！
-- **\[2024/04\]** 支持序列并行训练策略以实现语言模型超长上下文训练！\[[文档](https://github.com/InternLM/xtuner/blob/docs/docs/zh_cn/acceleration/train_extreme_long_sequence.rst)\] \[[速度基准](https://github.com/InternLM/xtuner/blob/docs/docs/zh_cn/acceleration/benchmark.rst)\]
-- **\[2024/02\]** 支持 [Gemma](xtuner/configs/gemma) 模型！
-- **\[2024/02\]** 支持 [Qwen1.5](xtuner/configs/qwen/qwen1_5) 模型！
-- **\[2024/01\]** 支持 [InternLM2](xtuner/configs/internlm) 模型！同时，最新版的多模态大模型 [LLaVA-Internlm2-7B](https://huggingface.co/xtuner/llava-internlm2-7b) / [20B](https://huggingface.co/xtuner/llava-internlm2-20b) 发布，其表现出强大的性能！
-- **\[2024/01\]** 支持 [DeepSeek-MoE](https://huggingface.co/deepseek-ai/deepseek-moe-16b-chat) 模型！20GB 显存即可实现 QLoRA 微调，4x80GB 即可实现全参数微调。快速开始请查阅相关[配置文件](xtuner/configs/deepseek/)！
-- **\[2023/12\]** 🔥 支持多模态模型 VLM（[LLaVA-v1.5](https://github.com/haotian-liu/LLaVA)）预训练和指令微调！快速开始请查阅此[文档](xtuner/configs/llava/README_zh-CN.md)！
-- **\[2023/12\]** 🔥 支持 [Mixtral 8x7B](https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1) 模型！快速开始请查阅此[文档](xtuner/configs/mixtral/README.md)！
-- **\[2023/11\]** 支持 [ChatGLM3-6B](xtuner/configs/chatglm) 模型！
-- **\[2023/10\]** 支持 [MSAgent-Bench](https://modelscope.cn/datasets/damo/MSAgent-Bench) 数据集，并且微调所得大语言模型可应用至 [Lagent](https://github.com/InternLM/lagent) 框架！
-- **\[2023/10\]** 优化数据处理逻辑以兼容 `system` 字段，相关细节请查阅[文档](docs/zh_cn/user_guides/dataset_format.md)！
-- **\[2023/09\]** 支持 [InternLM-20B](xtuner/configs/internlm) 系列模型！
-- **\[2023/09\]** 支持 [Baichuan2](xtuner/configs/baichuan) 系列模型！
-- **\[2023/08\]** XTuner 正式发布！众多微调模型已上传至 [HuggingFace](https://huggingface.co/xtuner)！
+- **\[2025/09\]** XTuner V1 正式发布！专为超大规模 MoE 模型打造的新一代训练引擎
 
-## 📖 介绍
 
-XTuner 是一个高效、灵活、全能的轻量化大模型微调工具库。
+## 📖  介绍
 
-**高效**
+XTuner V1 是一个专为超大规模 MoE 模型打造的新一代大模型训练引擎。与传统 3D 并行训练架构相比，XTuner V1 针对当前学术界主流的 MoE 训练场景进行了深度优化。
 
-- 支持大语言模型 LLM、多模态图文模型 VLM 的预训练及轻量级微调。XTuner 支持在 8GB 显存下微调 7B 模型，同时也支持多节点跨设备微调更大尺度模型（70B+）。
-- 自动分发高性能算子（如 FlashAttention、Triton kernels 等）以加速训练吞吐。
-- 兼容 [DeepSpeed](https://github.com/microsoft/DeepSpeed) 🚀，轻松应用各种 ZeRO 训练优化策略。
 
-**灵活**
+### 核心特性
 
-- 支持多种大语言模型，包括但不限于 [InternLM](https://huggingface.co/internlm)、[Mixtral-8x7B](https://huggingface.co/mistralai)、[Llama 2](https://huggingface.co/meta-llama)、[ChatGLM](https://huggingface.co/THUDM)、[Qwen](https://huggingface.co/Qwen)、[Baichuan](https://huggingface.co/baichuan-inc)。
-- 支持多模态图文模型 LLaVA 的预训练与微调。利用 XTuner 训得模型 [LLaVA-InternLM2-20B](https://huggingface.co/xtuner/llava-internlm2-20b) 表现优异。
-- 精心设计的数据管道，兼容任意数据格式，开源数据或自定义数据皆可快速上手。
-- 支持 [QLoRA](http://arxiv.org/abs/2305.14314)、[LoRA](http://arxiv.org/abs/2106.09685)、全量参数微调等多种微调算法，支撑用户根据具体需求作出最优选择。
+**📊 Dropless 训练**
+- **灵活扩展，无需复杂配置：** 200B 量级 MoE 无需专家并行；600B MoE 仅需节点内专家并行
+- **优化的并行策略：** 相比传统 3D 并行方案，专家并行维度更小，实现更高效的 Dropless 训练
 
-**全能**
 
-- 支持增量预训练、指令微调与 Agent 微调。
-- 预定义众多开源对话模版，支持与开源或训练所得模型进行对话。
-- 训练所得模型可无缝接入部署工具库 [LMDeploy](https://github.com/InternLM/lmdeploy)、大规模评测工具库 [OpenCompass](https://github.com/open-compass/opencompass) 及 [VLMEvalKit](https://github.com/open-compass/VLMEvalKit)。
+**📝 长序列支持**
+- **内存高效设计：** 通过先进的显存优化技术组合，200B MoE 模型无需序列并行即可训练 64k 序列长度
+- **灵活扩展能力：** 全面支持 DeepSpeed Ulysses 序列并行，最大序列长度可线性扩展
+- **稳定可靠：** 长序列训练时对专家负载不均衡不敏感，保持稳定性能
 
-## 🔥 支持列表
 
-<table>
-<tbody>
-<tr align="center" valign="middle">
-<td>
-  <b>模型</b>
-</td>
-<td>
-  <b>数据集</b>
-</td>
-<td>
-  <b>数据格式</b>
-</td>
- <td>
-  <b>微调算法</b>
-</td>
-</tr>
-<tr valign="top">
-<td align="left" valign="top">
-<ul>
-  <li><a href="https://huggingface.co/internlm">InternLM 2 / 2.5</a></li>
-  <li><a href="https://huggingface.co/meta-llama">Llama 2 / 3</a></li>
-  <li><a href="https://huggingface.co/collections/microsoft/phi-3-6626e15e9585a200d2d761e3">Phi-3</a></li>
-  <li><a href="https://huggingface.co/THUDM/chatglm2-6b">ChatGLM2</a></li>
-  <li><a href="https://huggingface.co/THUDM/chatglm3-6b">ChatGLM3</a></li>
-  <li><a href="https://huggingface.co/Qwen/Qwen-7B">Qwen</a></li>
-  <li><a href="https://huggingface.co/baichuan-inc/Baichuan2-7B-Base">Baichuan2</a></li>
-  <li><a href="https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1">Mixtral</a></li>
-  <li><a href="https://huggingface.co/deepseek-ai/DeepSeek-V2-Chat">DeepSeek V2</a></li>
-  <li><a href="https://huggingface.co/google">Gemma</a></li>
-  <li><a href="https://huggingface.co/openbmb">MiniCPM</a></li>
-  <li>...</li>
-</ul>
-</td>
-<td>
-<ul>
-  <li><a href="https://modelscope.cn/datasets/damo/MSAgent-Bench">MSAgent-Bench</a></li>
-  <li><a href="https://huggingface.co/datasets/fnlp/moss-003-sft-data">MOSS-003-SFT</a> 🔧</li>
-  <li><a href="https://huggingface.co/datasets/tatsu-lab/alpaca">Alpaca en</a> / <a href="https://huggingface.co/datasets/silk-road/alpaca-data-gpt4-chinese">zh</a></li>
-  <li><a href="https://huggingface.co/datasets/WizardLM/WizardLM_evol_instruct_V2_196k">WizardLM</a></li>
-  <li><a href="https://huggingface.co/datasets/timdettmers/openassistant-guanaco">oasst1</a></li>
-  <li><a href="https://huggingface.co/datasets/garage-bAInd/Open-Platypus">Open-Platypus</a></li>
-  <li><a href="https://huggingface.co/datasets/HuggingFaceH4/CodeAlpaca_20K">Code Alpaca</a></li>
-  <li><a href="https://huggingface.co/datasets/burkelibbey/colors">Colorist</a> 🎨</li>
-  <li><a href="https://github.com/WangRongsheng/ChatGenTitle">Arxiv GenTitle</a></li>
-  <li><a href="https://github.com/LiuHC0428/LAW-GPT">Chinese Law</a></li>
-  <li><a href="https://huggingface.co/datasets/Open-Orca/OpenOrca">OpenOrca</a></li>
-  <li><a href="https://huggingface.co/datasets/shibing624/medical">Medical Dialogue</a></li>
-  <li>...</li>
-</ul>
-</td>
-<td>
-<ul>
-  <li><a href="docs/zh_cn/user_guides/incremental_pretraining.md">Incremental Pre-training</a> </li>
-  <li><a href="docs/zh_cn/user_guides/single_turn_conversation.md">Single-turn Conversation SFT</a> </li>
-  <li><a href="docs/zh_cn/user_guides/multi_turn_conversation.md">Multi-turn Conversation SFT</a> </li>
-</ul>
-</td>
-<td>
-<ul>
-  <li><a href="http://arxiv.org/abs/2305.14314">QLoRA</a></li>
-  <li><a href="http://arxiv.org/abs/2106.09685">LoRA</a></li>
-  <li>全量参数微调</li>
-  <li><a href="https://arxiv.org/abs/2305.18290">DPO</a></li>
-  <li><a href="https://arxiv.org/abs/2403.07691">ORPO</a></li>
-  <li>Reward Model</a></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+**⚡ 卓越效率**
 
-## 🛠️ 快速上手
+- **超大规模支持：** 支持高达 1T 参数量的 MoE 模型训练
+- **突破性能瓶颈：** 首次在 200B 以上规模的 MoE 模型上，实现 FSDP 训练吞吐超越传统 3D 并行方案
+- **硬件优化：** 在 Ascend A3 NPU 超节点上，训练效率超越 NVIDIA H800
 
-### 安装
 
-- 推荐使用 conda 先构建一个 Python-3.10 的虚拟环境
+<div align=center>
+  <img src="https://github.com/user-attachments/assets/98519a93-1ce8-49f0-a7ab-d7968c9d67a6" style="width:90%">
+</div>
 
-  ```bash
-  conda create --name xtuner-env python=3.10 -y
-  conda activate xtuner-env
-  ```
 
-- 通过 pip 安装 XTuner：
+## 🔥 Roadmap
 
-  ```shell
-  pip install -U xtuner
-  ```
+XTuner V1 致力于持续提升超大规模 MoE 模型的预训练、指令微调和强化学习训练效率，并重点优化昇腾 NPU 支持。
 
-  亦可集成 DeepSpeed 安装：
+### 🚀 训练引擎
 
-  ```shell
-  pip install -U 'xtuner[deepspeed]'
-  ```
+我们的愿景是将 XTuner V1 打造成通用训练后端，无缝集成到更广泛的开源生态系统中。
 
-- 从源码安装 XTuner：
+|   Model    |  GPU(FP8) | GPU(BF16)| NPU(BF16) |
+|------------|-----------|----------|-----------|
+| Intern S1  |    ✅     |    ✅    |    ✅     |
+| Intern VL  |    ✅     |    ✅    |    ✅     |
+| Qwen3 Dense|    ✅     |    ✅    |    ✅     |
+| Qwen3 MoE  |    ✅     |    ✅    |    ✅     |
+| GPT OSS    |    ✅     |    ✅    |    ❌     |
+| Deepseek V3|    ✅     |    ✅    |    ❌     |
+| KIMI K2    |    ✅     |    ✅    |    ❌     |
 
-  ```shell
-  git clone https://github.com/InternLM/xtuner.git
-  cd xtuner
-  pip install -e '.[all]'
-  ```
 
-### 微调
+### 🧠 算法套件
 
-XTuner 支持微调大语言模型。数据集预处理指南请查阅[文档](./docs/zh_cn/user_guides/dataset_prepare.md)。
+算法组件正在快速迭代中。欢迎社区贡献 - 使用 XTuner V1，将您的算法扩展到前所未有的规模！
 
-- **步骤 0**，准备配置文件。XTuner 提供多个开箱即用的配置文件，用户可以通过下列命令查看：
+**已实现**
 
-  ```shell
-  xtuner list-cfg
-  ```
+- ✅ **多模态预训练** - 全面支持视觉语言模型训练
+- ✅ **多模态监督微调** - 针对指令跟随优化
+- ✅ [GRPO](https://arxiv.org/pdf/2402.03300) - Group Relative Policy Optimization
 
-  或者，如果所提供的配置文件不能满足使用需求，请导出所提供的配置文件并进行相应更改：
+**即将推出**
 
-  ```shell
-  xtuner copy-cfg ${CONFIG_NAME} ${SAVE_PATH}
-  vi ${SAVE_PATH}/${CONFIG_NAME}_copy.py
-  ```
+- 🔄 [MPO](https://arxiv.org/pdf/2411.10442) - Mixed Preference Optimization
+- 🔄 [DAPO](https://arxiv.org/pdf/2503.14476) - Dynamic Sampling Policy Optimization
+- 🔄 **多轮智能体强化学习** - 高级智能体训练能力
 
-- **步骤 1**，开始微调。
 
-  ```shell
-  xtuner train ${CONFIG_NAME_OR_PATH}
-  ```
+### ⚡ 推理引擎集成
 
-  例如，我们可以利用 QLoRA 算法在 oasst1 数据集上微调 InternLM2.5-Chat-7B：
+与主流推理框架无缝对接
 
-  ```shell
-  # 单卡
-  xtuner train internlm2_5_chat_7b_qlora_oasst1_e3 --deepspeed deepspeed_zero2
-  # 多卡
-  (DIST) NPROC_PER_NODE=${GPU_NUM} xtuner train internlm2_5_chat_7b_qlora_oasst1_e3 --deepspeed deepspeed_zero2
-  (SLURM) srun ${SRUN_ARGS} xtuner train internlm2_5_chat_7b_qlora_oasst1_e3 --launcher slurm --deepspeed deepspeed_zero2
-  ```
+- [x] LMDeploy
+- [ ] vLLM
+- [ ] SGLang
 
-  - `--deepspeed` 表示使用 [DeepSpeed](https://github.com/microsoft/DeepSpeed) 🚀 来优化训练过程。XTuner 内置了多种策略，包括 ZeRO-1、ZeRO-2、ZeRO-3 等。如果用户期望关闭此功能，请直接移除此参数。
 
-  - 更多示例，请查阅[文档](./docs/zh_cn/user_guides/finetune.md)。
 
-- **步骤 2**，将保存的 PTH 模型（如果使用的DeepSpeed，则将会是一个文件夹）转换为 HuggingFace 模型：
+### 数据
 
-  ```shell
-  xtuner convert pth_to_hf ${CONFIG_NAME_OR_PATH} ${PTH} ${SAVE_PATH}
-  ```
-
-### 对话
-
-XTuner 提供与大语言模型对话的工具。
-
-```shell
-xtuner chat ${NAME_OR_PATH_TO_LLM} --adapter {NAME_OR_PATH_TO_ADAPTER} [optional arguments]
-```
-
-例如：
-
-与 InternLM2.5-Chat-7B 对话：
-
-```shell
-xtuner chat internlm/internlm2-chat-7b --prompt-template internlm2_chat
-```
-
-更多示例，请查阅[文档](./docs/zh_cn/user_guides/chat.md)。
-
-### 部署
-
-- **步骤 0**，将 HuggingFace adapter 合并到大语言模型：
-
-  ```shell
-  xtuner convert merge \
-      ${NAME_OR_PATH_TO_LLM} \
-      ${NAME_OR_PATH_TO_ADAPTER} \
-      ${SAVE_PATH} \
-      --max-shard-size 2GB
-  ```
-
-- **步骤 1**，使用任意推理框架部署微调后的大语言模型，例如 [LMDeploy](https://github.com/InternLM/lmdeploy) 🚀：
-
-  ```shell
-  pip install lmdeploy
-  python -m lmdeploy.pytorch.chat ${NAME_OR_PATH_TO_LLM} \
-      --max_new_tokens 256 \
-      --temperture 0.8 \
-      --top_p 0.95 \
-      --seed 0
-  ```
-
-  🔥 追求速度更快、显存占用更低的推理？欢迎体验 [LMDeploy](https://github.com/InternLM/lmdeploy) 提供的 4-bit 量化！使用指南请见[文档](https://github.com/InternLM/lmdeploy/tree/main#quantization)。
-
-### 评测
-
-- 推荐使用一站式平台 [OpenCompass](https://github.com/InternLM/opencompass) 来评测大语言模型，其目前已涵盖 50+ 数据集的约 30 万条题目。
+- 推荐使用 [GraphGen](https://github.com/open-sciencelab/GraphGen) 合成 SFT 所需训练数据，目前已在多个垂域验证效果。
 
 ## 🤝 贡献指南
 
 我们感谢所有的贡献者为改进和提升 XTuner 所作出的努力。请参考[贡献指南](.github/CONTRIBUTING.md)来了解参与项目贡献的相关指引。
 
-## 🎖️ 致谢
+## 🙏 致谢
 
-- [Llama 2](https://github.com/facebookresearch/llama)
-- [DeepSpeed](https://github.com/microsoft/DeepSpeed)
-- [QLoRA](https://github.com/artidoro/qlora)
-- [LMDeploy](https://github.com/InternLM/lmdeploy)
-- [LLaVA](https://github.com/haotian-liu/LLaVA)
+XTuner V1 的开发深受开源社区优秀项目的启发和支持。我们向以下开创性项目致以诚挚的谢意：
 
+**训练引擎：**
+
+- [Torchtitan](https://github.com/pytorch/torchtitan) - PyTorch 原生分布式训练框架
+- [Deepspeed](https://github.com/deepspeedai/DeepSpeed) - 微软深度学习优化库	
+- [MindSpeed](https://gitee.com/ascend/MindSpeed) - 昇腾高性能训练加速库
+- [Megatron](https://github.com/NVIDIA/Megatron-LM) - NVIDIA 大规模 Transformer 训练框架
+
+
+**强化学习：**
+
+XTuner V1 的强化学习能力借鉴了以下项目的优秀实践和经验
+
+- [veRL](https://github.com/volcengine/verl) - Volcano Engine Reinforcement Learning for LLMs	
+- [SLIME](https://github.com/THUDM/slime) - THU's scalable RLHF implementation	
+- [AReal](https://github.com/inclusionAI/AReaL) - Ant Reasoning Reinforcement Learning for LLMs
+- [OpenRLHF](https://github.com/OpenRLHF/OpenRLHF) - An Easy-to-use, Scalable and High-performance RLHF Framework based on Ray
+
+我们衷心感谢这些项目的所有贡献者和维护者，是他们推动了大规模模型训练领域的不断进步。
 ## 🖊️ 引用
 
 ```bibtex

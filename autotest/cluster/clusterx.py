@@ -1,0 +1,285 @@
+import hashlib
+import re
+import time
+import traceback
+from typing import Any, Dict, Optional
+
+from clusterx.config import CLUSTER
+from clusterx.launcher import CLUSTER_MAPPING
+from clusterx.launcher.base import JobSchema, JobStatus
+from pydantic import ValidationError
+
+
+JOB_LOOKUP_RETRY_INTERVAL_S = 5
+JOB_LOOKUP_RETRY_TIMES = 6
+STATUS_POLL_INTERVAL_S = 10
+MAX_UNRECOGNIZED_STATUS_POLLS = 30
+# rjob appends a suffix such as "-7b6a1" (6 chars); keep the final name <= 50.
+MAX_RJOB_FINAL_NAME_LEN = 50
+RJOB_GENERATED_SUFFIX_LEN = 6
+MAX_RJOB_SUBMITTED_NAME_LEN = MAX_RJOB_FINAL_NAME_LEN - RJOB_GENERATED_SUFFIX_LEN
+
+
+def build_rjob_name(
+    task_type: str,
+    case_name: str,
+    run_id: str,
+    max_len: int = MAX_RJOB_SUBMITTED_NAME_LEN,
+) -> str:
+    """Build a submitted rjob name while reserving room for its generated
+    suffix.
+
+    Format: ``{type}-{case}-{run_id}``. When too long, truncate ``case`` and append a
+    short hash so different long case names do not collide after truncation. By
+    default, this returns at most 44 chars; rjob then appends its 6-char suffix.
+    """
+    task_type = str(task_type)
+    case_name = str(case_name)
+    run_id = str(run_id)
+    prefix = f"{task_type}-"
+    suffix = f"-{run_id}"
+    budget = max_len - len(prefix) - len(suffix)
+    if budget <= 0:
+        digest = hashlib.md5(f"{task_type}:{case_name}:{run_id}".encode()).hexdigest()
+        return digest[:max_len]
+    if len(case_name) <= budget:
+        return f"{prefix}{case_name}{suffix}"
+
+    digest = hashlib.md5(case_name.encode()).hexdigest()[:6]
+    keep = budget - len(digest) - 1  # casehead-digest
+    if keep < 1:
+        return f"{prefix}{digest}{suffix}"[:max_len]
+    return f"{prefix}{case_name[:keep]}-{digest}{suffix}"
+
+
+def _clusterx_submit_kwargs(task_config: Dict[str, Any]) -> dict[str, str]:
+    """Extract clusterx partition/project_name for job submission."""
+    clusterx_cfg = task_config.get("clusterx") or {}
+    submit_kwargs: dict[str, str] = {}
+    partition = clusterx_cfg.get("partition")
+    project_name = clusterx_cfg.get("project_name")
+    if partition:
+        submit_kwargs["partition"] = str(partition)
+    if project_name:
+        submit_kwargs["project_name"] = str(project_name)
+    return submit_kwargs
+
+
+def _validate_submitted_job(job_name: str, job_schema: JobSchema) -> None:
+    """Fail fast when clusterx/brainpp did not actually create an rjob."""
+    if not job_schema.job_id:
+        raise RuntimeError(f"clusterx job {job_name} submit returned empty job_id (status={job_schema.status})")
+    if job_schema.status in (JobStatus.FAILED, JobStatus.STOPPED):
+        raise RuntimeError(
+            f"clusterx job {job_name} submit failed immediately "
+            f"(job_id={job_schema.job_id!r}, status={job_schema.status})"
+        )
+
+
+class ClusterTaskExecutor:
+    def __init__(self):
+        cluster_spec = CLUSTER_MAPPING[CLUSTER]
+        cluster_cls = cluster_spec["type"]
+        params_cls = cluster_spec["params"]
+        cluster = cluster_cls()
+
+        self.cluster = cluster
+        self.params_cls = params_cls
+
+    def execute_task(self, task_config: Dict[str, Any]):
+        resource = task_config.get("resource", None)
+        command = task_config.get("command", "")
+        timeout = task_config.get("timeout", 600)
+        envs = resource.get("envs", [])
+        job_schema = None
+
+        if not command:
+            return False, "Command is empty or resource is None. Not implemented! Please check!"
+        if resource is None:
+            return False, "Resource is None. Please check!"
+
+        all_command = []
+        print(envs, resource)
+        for env in envs:
+            all_command.append(f"export {env}")
+
+        all_command.append(command)
+        run_command = "; ".join(all_command)
+        job_name = build_rjob_name(task_config["type"], task_config["case_name"], task_config["run_id"])
+        clusterx_submit = _clusterx_submit_kwargs(task_config)
+        print(f"rjob name ({len(job_name)} chars): {job_name}")
+        if clusterx_submit:
+            print(f"clusterx submit target: {clusterx_submit}")
+
+        try:
+            params = self.params_cls(
+                job_name=job_name,
+                cmd=run_command,
+                gpus_per_task=resource.get("gpus_per_task", 8),
+                cpus_per_task=resource.get("cpus_per_task", 32),
+                memory_per_task=resource.get("memory_per_task", 512),
+                priority=resource.get("priority", 9),
+                priority_preemptible=resource.get("preemptible", False),
+                num_nodes=resource.get("num_nodes", 1),
+                image=resource.get("image", None),
+                no_env=resource.get("no_env", True),
+                image_pull_policy=resource.get("image_pull_policy", "Always"),
+                **clusterx_submit,
+            )
+
+            job_schema = self.cluster.run(params)
+            _validate_submitted_job(job_name, job_schema)
+            print(
+                f"clusterx job submitted: job_id={job_schema.job_id}, "
+                f"status={job_schema.status}, target={clusterx_submit or 'clusterx.yaml default'}"
+            )
+        except ValidationError:
+            raise
+        except Exception as e:
+            traceback.print_exc()
+            job_schema = self._lookup_job_schema(job_name)
+            if job_schema is None or job_schema.status not in (JobStatus.QUEUING, JobStatus.RUNNING):
+                detail = (
+                    f"status={job_schema.status}, job_id={getattr(job_schema, 'job_id', None)!r}"
+                    if job_schema is not None
+                    else "no matching in-flight job"
+                )
+                raise RuntimeError(
+                    f"clusterx job {job_name} submit failed and lookup found no active job ({detail}), "
+                    f"task config is {task_config}, exception is: {e}"
+                ) from e
+            print(
+                f"clusterx job {job_name} submit error recovered via lookup: "
+                f"job_id={job_schema.job_id}, status={job_schema.status}, original exception: {e}"
+            )
+
+        poll_start_time = time.time()
+        run_start_time = None
+        unrecognized_polls = 0
+
+        while True:
+            status = self.get_task_status(job_schema.job_id)
+            if status == JobStatus.UNRECORGNIZED:
+                unrecognized_polls += 1
+                if unrecognized_polls >= MAX_UNRECOGNIZED_STATUS_POLLS:
+                    raise RuntimeError(
+                        f"clusterx job {job_name} ({job_schema.job_id}) status unreadable for "
+                        f"{unrecognized_polls * STATUS_POLL_INTERVAL_S}s; submit likely failed"
+                    )
+            else:
+                unrecognized_polls = 0
+
+            if status in [JobStatus.RUNNING] and run_start_time is None:
+                run_start_time = time.time()
+            if status in [JobStatus.SUCCEEDED]:
+                # May miss RUNNING if the job finishes between polls or status jumps.
+                effective_start = run_start_time if run_start_time is not None else poll_start_time
+                run_time = time.time() - effective_start
+                if run_time >= timeout:
+                    return False, f"Task succeeded, but run time is {run_time}, exceeding then {timeout}"
+                else:
+                    return True, "Task succeeded"
+            elif status in [JobStatus.FAILED, JobStatus.STOPPED]:
+                if status in [JobStatus.FAILED]:
+                    time.sleep(10)
+                    try:
+                        log = self.cluster.get_log(job_schema.job_id)
+                        print("=== Task log ===")
+                        print(log)
+                    except Exception as e:
+                        print(f"Get log failed: {e}")
+                return False, "Task failed or stopped"
+            # Only enforce execution timeout after the job has started running.
+            # Queuing / waiting time is not limited by config timeout.
+            if run_start_time is not None and time.time() - run_start_time >= timeout:
+                self.stop_task(job_schema.job_id)
+                raise Exception(
+                    f"Execution timeout: jobname {job_name}, {timeout} seconds, "
+                    f"task {job_schema.job_id} status is {status}"
+                )
+            time.sleep(STATUS_POLL_INTERVAL_S)
+
+    @staticmethod
+    def _job_name_matches(candidate: str | None, job_name: str) -> bool:
+        if not candidate:
+            return False
+        return candidate == job_name or candidate.startswith(f"{job_name}-")
+
+    def _pick_latest_job(self, jobs: list[JobSchema]) -> JobSchema:
+        return max(jobs, key=lambda job: job.job_id or job.job_name or "")
+
+    def _lookup_job_schema_once(self, job_name: str) -> JobSchema | None:
+        try:
+            return self.cluster.get_job_info(job_name)
+        except Exception:
+            pass
+
+        name_regex = rf"^{re.escape(job_name)}(-.*)?$"
+        try:
+            jobs = self.cluster.list_jobs(regex=name_regex, num=50)
+            if jobs:
+                return self._pick_latest_job(jobs)
+        except Exception as e:
+            print(f"list_jobs lookup for {job_name} failed: {e}")
+
+        client = getattr(self.cluster, "client", None)
+        get_job_name = getattr(self.cluster, "_get_job_name", None)
+        if client is not None and get_job_name is not None:
+            try:
+                matched_names = [
+                    get_job_name(job)
+                    for job in (client.list() or [])
+                    if self._job_name_matches(get_job_name(job), job_name)
+                ]
+                if matched_names:
+                    return self.cluster.get_job_info(max(matched_names))
+            except Exception as e:
+                print(f"brainpp client list lookup for {job_name} failed: {e}")
+
+        try:
+            jobs = self.cluster.list_jobs(num=100)
+            matched = [job for job in jobs if self._job_name_matches(job.job_id, job_name)]
+            if matched:
+                return self._pick_latest_job(matched)
+        except Exception as e:
+            print(f"generic list_jobs lookup for {job_name} failed: {e}")
+
+        return None
+
+    def _lookup_job_schema(self, job_name: str) -> JobSchema | None:
+        for attempt in range(1, JOB_LOOKUP_RETRY_TIMES + 1):
+            job_schema = self._lookup_job_schema_once(job_name)
+            if job_schema is not None:
+                return job_schema
+            if attempt < JOB_LOOKUP_RETRY_TIMES:
+                print(
+                    f"Job {job_name} not found on attempt {attempt}/{JOB_LOOKUP_RETRY_TIMES}, "
+                    f"retry in {JOB_LOOKUP_RETRY_INTERVAL_S}s"
+                )
+                time.sleep(JOB_LOOKUP_RETRY_INTERVAL_S)
+        return None
+
+    def get_task_status(self, job_id: str) -> Optional[JobStatus]:
+        try:
+            status = self.cluster.get_job_info(job_id).status
+        except Exception as e:
+            status = JobStatus.UNRECORGNIZED
+            print(f"Check job {job_id} status failed, exception is: {e}")
+
+        return status
+
+    def stop_task(self, job_id: str) -> Optional[JobStatus]:
+        error_time = 0
+        while error_time < 10:
+            try:
+                self.cluster.stop(job_id=job_id)
+                return True
+            except Exception as e:
+                error_time += 1
+                if error_time <= 10:
+                    print(
+                        f"Stop task {job_id} fail, try time {error_time}, exception is: {e}",
+                    )
+                    time.sleep(100)
+                else:
+                    raise Exception(f"Stop task {job_id} failed after retry 10 times, exception is: {e}")
